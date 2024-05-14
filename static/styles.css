@@ -1,0 +1,24 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 5px;
+    padding: 5 px;
+}
+
+.header {
+    background-color: #cfcfcf;
+    padding: 10 px 0;
+    text-align: center;
+}
+
+.footer {
+    background-color: #cfcfcf;
+    padding: 10 px 0;
+    text-align: center;
+}
+
+.div {
+    background-color: #cfcfcf;
+    padding: 10 px 0;
+    text-align: center;
+    object-position: center;
+}
