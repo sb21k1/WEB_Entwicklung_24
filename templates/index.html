@@ -2,18 +2,22 @@
 <html>
 
 <head>
-   
+
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='location_preview_styles.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='filter_bar.css') }}">
   
 </head>
 
 <body>
     <div>
-        {%for location in locations%}
-            {%include 'location_preview_template.html'%}
-        {%endfor%}
-    </div>
+            {%include 'filter_bar_template.html'%}
+        </div>
+    <div>
+         {%for location in locations%}
+                {%include 'location_preview_template.html'%}
+            {%endfor%}
+        </div>
 </body>
 
 </html>

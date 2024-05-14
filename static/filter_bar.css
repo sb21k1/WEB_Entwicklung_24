@@ -1,0 +1,31 @@
+/* styles.css */
+
+.filter_bar {
+    display: inline-block;
+    margin-right: 10px;
+    padding: 10px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 100%;
+    cursor: pointer;
+}
+
+.location-geo-filter-button,
+.location-type-filter-button,
+.location-theme-filter-button,
+.usecase-filter-button {
+    display: inline-block;
+    margin-right: 10px;
+    padding: 10px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.location-geo-filter-button:hover,
+.location-type-filter-button:hover,
+.location-theme-filter-button:hover,
+.usecase-filter-button:hover {
+    background-color: #e0e0e0;
+}
