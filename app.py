@@ -17,7 +17,7 @@ locations = [
     {"name": "Location3", "description": "Beschreibung3"},
     {"name": "Location1", "description": "Beschreibung1"},
     {"name": "Location2", "description": "Beschreibung2"},
-    {"name": "Location3", "description": "Beschreddibung3"}
+    {"name": "Location3", "description": "Beschreibung3"}
     
 ]
 
