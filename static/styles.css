@@ -22,3 +22,12 @@ body {
     text-align: center;
     object-position: center;
 }
+
+.p {
+    color: grey;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.filter_bar_container {
+    align: center;
+}
