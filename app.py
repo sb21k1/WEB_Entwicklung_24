@@ -3,7 +3,6 @@ from flask import render_template
 
 app = Flask(__name__)
 
-
 #später hier DB anbindung
 locations = [
     {"name": "Location1", "description": "Beschreibung1"},

@@ -1,9 +1,10 @@
 <!DOCTYPE html>
+!b5-script
 <html>
 
 <head>
 
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='location_preview_styles.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='location_preview.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='filter_bar.css') }}">
 
@@ -11,13 +12,26 @@
 
 <body>
     <div class="filter_bar_container">
-        {%include 'filter_bar_template.html'%}
+        {%include 'filter_bar.html'%}
     </div>
+
     <div>
-        {%for location in locations%}
-        {%include 'location_preview_template.html'%}
-        {%endfor%}
+        <div>
+            {% for location in locations %}
+            {% if loop.index0 % 5 == 0 %}
+            {% if loop.index0 != 0 %}
+        </div> <!-- Schließe die vorherige Reihe, wenn nicht die erste Iteration -->
+        {% endif %}
+        <div class="row"> <!-- Starte eine neue Reihe alle 5 Elemente -->
+            {% endif %}
+            <div class="col-md-2">
+                {% include 'location_preview.html' %}
+            </div>
+            {% endfor %}
+        </div> <!-- Schließe die letzte Reihe -->
     </div>
+    </div>
+
 </body>
 
 </html>

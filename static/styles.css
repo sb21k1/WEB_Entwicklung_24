@@ -29,5 +29,9 @@ body {
 }
 
 .filter_bar_container {
-    align: center;
+    display: flex;
+    justify-content: center;
+    /* Centers the filter bar horizontally */
+    margin-bottom: 20px;
+    /* Adds space below the filter bar */
 }
