@@ -1,0 +1,30 @@
+.dialog {
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+    border-radius: 25px;
+    align-items: center;
+}
+
+.slider_container {
+    size: 100%;
+}
+
+.slider {
+    width: 100%;
+    color: rgb(116, 9, 141);
+}
+
+.map_container {
+    height: 400px;
+    margin-bottom: 20px;
+}
+
+.map {
+    border-radius: 25px;
+    width: 100%;
+}

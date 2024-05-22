@@ -1,5 +1,4 @@
 body {
-    font-family: Arial, sans-serif;
     margin: 5px;
     padding: 5 px;
 }
@@ -23,11 +22,14 @@ body {
     object-position: center;
 }
 
-.p {
-    color: grey;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+.filter_bar_container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    margin-top: 20px;
 }
 
-.filter_bar_container {
-    align: center;
+.h5 {
+    color: dimgray;
+    font-size: 1px;
 }
