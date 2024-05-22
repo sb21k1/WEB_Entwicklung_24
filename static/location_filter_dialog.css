@@ -23,3 +23,8 @@
     height: 400px;
     margin-bottom: 20px;
 }
+
+.map {
+    border-radius: 25px;
+    width: 100%;
+}
