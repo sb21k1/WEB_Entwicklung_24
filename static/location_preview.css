@@ -1,5 +1,5 @@
 .location_preview_container {
-    width: 200px;
+    width: auto;
     display: inline-block;
     flex-wrap: wrap;
     justify-content: space-between;

@@ -1,5 +1,4 @@
 body {
-    font-family: Arial, sans-serif;
     margin: 5px;
     padding: 5 px;
 }
@@ -23,15 +22,14 @@ body {
     object-position: center;
 }
 
-.p {
-    color: grey;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
 .filter_bar_container {
     display: flex;
     justify-content: center;
-    /* Centers the filter bar horizontally */
     margin-bottom: 20px;
-    /* Adds space below the filter bar */
+    margin-top: 20px;
+}
+
+.h5 {
+    color: dimgray;
+    font-size: 1px;
 }
