@@ -6,37 +6,73 @@ var map = new mapboxgl.Map({
     zoom: 10
 });
 
+map.on('load', function() {
+    map.resize();
+    loadSavedLocation();
+});
+
+map.on('idle', function() {
+    map.resize();
+});
+
 var userLocation;
-if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(position => {
-        userLocation = [position.coords.longitude, position.coords.latitude];
+var output = document.getElementById('myDistanceInfo');
 
-        // Karte auf die Benutzerposition zentrieren
-        map.setCenter(userLocation);
+function initializeMap(position) {
+    userLocation = [position.coords.longitude, position.coords.latitude];
+    localStorage.setItem('userLocation', JSON.stringify(userLocation));
+    console.log('User location saved:', userLocation);
+    setupMap(userLocation);
+}
 
-        // Marker an der Benutzerposition hinzufügen
-        new mapboxgl.Marker()
-            .setLngLat(userLocation)
-            .addTo(map);
+function setupMap(center) {
+    map.setCenter(center);
 
-        // Radius-Kreis hinzufügen
-        var radius = document.getElementById('myRange').value;
-        addCircle(userLocation, radius);
-        updateBounds(userLocation, radius);
-    }, () => {
+    new mapboxgl.Marker()
+        .setLngLat(center)
+        .addTo(map);
+
+    var radius = document.getElementById('myRange').value;
+    output.textContent = radius + " km";
+    addCircle(center, radius);
+    updateBounds(center, radius);
+}
+
+function loadSavedLocation() {
+    var savedLocation = localStorage.getItem('userLocation');
+    if (savedLocation) {
+        userLocation = JSON.parse(savedLocation);
+        console.log('Loaded saved location:', userLocation);
+
+        setupMap(userLocation);
+
+        var savedRadius = localStorage.getItem('circleRadius') || 10; // default to 10 if not set
+        document.getElementById('myRange').value = savedRadius;
+        addCircle(userLocation, savedRadius);
+        updateBounds(userLocation, savedRadius);
+    }
+}
+
+if (!userLocation && navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(initializeMap, () => {
         alert('Es ist nicht möglich, Ihre Position zu bestimmen.');
     });
-} else {
+} else if (!userLocation) {
     alert('Geolocation wird von Ihrem Browser nicht unterstützt.');
 }
 
 document.getElementById('myRange').addEventListener('input', function(e) {
     var radius = e.target.value;
-    if (map.getSource('circle')) {
-        map.getSource('circle').setData(createGeoJSONCircle(userLocation, radius));
+    output.textContent = radius + " km";
+    if (userLocation) {
+        addCircle(userLocation, radius);
         updateBounds(userLocation, radius);
+        localStorage.setItem('circleRadius', radius);
     }
+
 });
+
+
 
 document.querySelector('.close_dialog').addEventListener('click', function() {
     document.getElementById('geo_dialog').style.display = 'none';

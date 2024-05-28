@@ -8,6 +8,12 @@
     z-index: 1;
     border-radius: 25px;
     align-items: center;
+    width: 500px;
+    height: fit-content;
+}
+
+mapboxgl-canvas-container {
+    height: 100vh;
 }
 
 .slider_container {
@@ -17,14 +23,45 @@
 .slider {
     width: 100%;
     color: rgb(116, 9, 141);
+    margin-top: 20px;
+    height: 10px;
 }
 
 .map_container {
-    height: 400px;
+    height: 200px;
     margin-bottom: 20px;
+    size: 100%;
 }
 
-.map {
-    border-radius: 25px;
+#map {
+    height: 100%;
     width: 100%;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+}
+
+#map-container {
+    height: 50vh;
+    width: auto;
+    border-radius: 25px;
+    overflow: hidden;
+}
+
+.map .chosen_tags,
+.all_tags {
+    border-radius: 25px;
+    padding: 25px;
+    display: inline-block;
+    grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+    grid-gap: 10px;
+    align-items: center;
+    margin: 2px;
+    width: 100%;
+    height: fit-content;
+}
+
+.myDistanceInfo {
+    font-weight: bold;
+    font-size: larger;
 }
