@@ -1,12 +1,17 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='location_filter_dialog.css') }}">
 <div class="dialog" id="geo_dialog" data-dialog="geo_dialog">
     <div>
         <div class="dialog_content">
-            <h5>Wählen Sie den Radius in welcher sich die Location befinden darf</h5>
-            <div class="map" id='map' style='width: 100%; height: 300px;'></div>
+            <div id="map-container">
+
+                <div id="map"></div>
+
+            </div>
             <div class="slider_container">
                 <div class="slidecontainer">
-                    <input type="range" min="1" max="500" value="5" class="slider" id="myRange">
+                    <input type="range" min="1" max="50" value="25" class="slider" id="myRange">
                 </div>
+                <p id="myDistanceInfo"></p>
             </div>
             <button class="close_dialog">Schließen</button>
         </div>

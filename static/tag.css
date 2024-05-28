@@ -1,6 +1,59 @@
 .tag_template {
-    margin: 10px;
-    padding: 5px;
-    background-color: azure;
-    border-radius: 10;
+    padding: 10px;
+    margin: 8px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 25px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    min-height: 20px;
+    line-height: 1;
+}
+
+.tag_template:hover {
+    padding: 10px;
+    transition: padding 0.3s ease;
+}
+
+.tag_template:not(:hover) {
+    padding: 7px;
+    transition: padding 0.3s ease;
+}
+
+.delete_tag {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: min-content;
+    background-color: transparent;
+    border: transparent;
+    cursor: pointer;
+    text-align: center;
+    outline: none;
+    margin: 0px;
+    padding: 0px;
+}
+
+.delete_tag:focus {
+    background-color: transparent;
+    border: transparent;
+    outline: none;
+    box-shadow: none;
+}
+
+.delete_tag:hover {
+    background-color: transparent;
+    border: transparent;
+    z-index: 2;
+}
+
+.tag_name {
+    font-style: oblique;
+    display: block;
+    padding: 0px;
+    margin: 0;
+    margin-left: 5px;
 }
