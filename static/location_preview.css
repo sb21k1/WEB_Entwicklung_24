@@ -1,9 +1,8 @@
 .location_preview_container {
-    width: auto;
-    display: inline-block;
+    display: inline-flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    max-width: fit-content;
+    width: 100%;
     overflow: hidden;
     margin: 10px;
     background-color: #ffffff;
@@ -12,14 +11,14 @@
 }
 
 @media screen and (max-width: 768px) {
-    .location_preview_item {
+    .location_preview_container {
         width: calc(25% - 20px);
         /* Bei kleineren Bildschirmen vier Elemente pro Reihe */
     }
 }
 
 @media screen and (max-width: 600px) {
-    .location_preview_item {
+    .location_preview_container {
         width: calc(50% - 20px);
         /* Bei sehr kleinen Bildschirmen zwei Elemente pro Reihe */
     }

@@ -11,15 +11,15 @@
 {% include 'filter_theme_dialog.html' %}
 {% include 'filter_usecase_dialog.html' %}
 
-<div>
+<div class="container">
     {% for location in locations %}
-    {% if loop.index0 % 5 == 0 %}
+    {% if loop.index0 % 4 == 0 %}
     {% if loop.index0 != 0 %}
-</div>
+</div> 
 {% endif %}
-<div class="row">
+<div class="row"> 
     {% endif %}
-    <div class="col-md-2">
+    <div class="col-md-3"> 
         {% include 'location_preview.html' %}
     </div>
     {% endfor %}

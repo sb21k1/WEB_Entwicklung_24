@@ -5,8 +5,11 @@
             <!-- Filter-Einstellungen hier einfügen -->
             <div class="chosen_tags"></div>
             <div class="all_tags">
-                {% for theme_tag in theme_tags %}
+                {% for tag in tags %}
+                {% if(tag.type =="usecase_tags") %}
+
                 {%include "tag.html"%}
+                {% endif %}
                 {%endfor%}
             </div>
             <button class="close_dialog">Schließen</button>
