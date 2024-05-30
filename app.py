@@ -77,3 +77,7 @@ tags = [
 @app.route('/')
 def index():
     return render_template('index.html', locations = locations, tags = tags)
+
+@app.route('/login')
+def login():
+    return render_template('login.html')
