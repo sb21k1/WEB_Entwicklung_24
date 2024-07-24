@@ -3,25 +3,28 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Login</title>
+    <title>Registration</title>
     <link rel="stylesheet" type="text/css" href="static/login+registration.css">
 </head>
 
 <body>
+    <div id="back-button">
+        <button id="back" onclick="window.location.href='/login'">Back</button>
+    </div>
     <div id="login-box">
         <div class="left">
-            <h1>Login</h1>
+            <h1>Registration</h1>
+            <input type="text" id="full_name" placeholder="Full name">
             <input type="email" id="email" placeholder="Email">
-            <input type="password" id="password" placeholder="Password">
-            <input type="button" id="login" value="Login" />
-            <input type="button" id="register" value="Not registered?" />
+            <input type="password" id="password" placeholder="New Password">
+            <input type="button" id="signup" value="Sign Up" />
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getDatabase, ref, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getDatabase, set, ref } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCvaudn5y9Lc7sB1U7b3iJNh1OhMgilmis",
@@ -37,34 +40,30 @@
         const db = getDatabase(app);
         const auth = getAuth();
 
-        document.getElementById('login').addEventListener('click', (e) => {
+        document.getElementById('signup').addEventListener('click', (e) => {
             e.preventDefault();
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
+            const full_name = document.getElementById('full_name').value;
 
-            if (!email || !password) {
+            if (!email || !password || !full_name) {
                 alert('Please fill all fields');
                 return;
             }
 
-            signInWithEmailAndPassword(auth, email, password)
+            createUserWithEmailAndPassword(auth, email, password)
                 .then((userCredential) => {
                     const user = userCredential.user;
-                    update(ref(db, 'users/' + user.uid), {
-                        last_login: new Date().toISOString()
+                    set(ref(db, 'users/' + user.uid), {
+                        fullName: full_name,
+                        email: email
                     });
-                    alert('User logged in successfully');
-                    window.location.href = '/';
+                    alert('User created successfully');
                 })
                 .catch((error) => {
                     const errorMessage = error.message;
                     alert(errorMessage);
                 });
-        });
-
-        document.getElementById('register').addEventListener('click', (e) => {
-            e.preventDefault();
-            window.location.href = '/registration';
         });
     </script>
 </body>
