@@ -1,5 +1,6 @@
-from flask import Flask, request, jsonify, redirect, url_for, render_template
-
+from flask import Flask, request, render_template
+from firebase_admin import credentials, initialize_app, db
+import firebase_admin
 
 app = Flask(__name__)
 
@@ -70,13 +71,18 @@ tags = [
     {"type": "usecase_tags", "name": "Social Media Content"},
     {"type": "usecase_tags", "name": "Live-Streaming"}
 ]
-
+cred = credentials.Certificate("serviceKey.json")
+firebase_admin.initialize_app(cred, {
+    'databaseURL': 'https://places-de11a-default-rtdb.firebaseio.com'
+})
 
 
 @app.route('/')
 def index():
+ uid = request.args.get('uid')
+ user_info = get_user_info(uid)
+ return render_template('index.html', uid=uid, user_info=user_info, locations=locations,tags=tags)
 
-    return render_template('index.html', locations=locations, tags=tags)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -86,6 +92,14 @@ def login():
 @app.route('/registration', methods=['GET', 'POST'])
 def registration():
     return render_template('registration.html')
+
+def get_user_info(uid):
+    ref = db.reference(f'users/{uid}')
+    return ref.get()
+
+def get_locations(uid):
+    # Ваша логика для получения локаций по UID
+    pass
 
 if __name__ == '__main__':
     app.run(debug=True)

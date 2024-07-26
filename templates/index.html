@@ -1,11 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-
 <div class="content">
     <div>
         {% include 'header.html' %}
+        {% if user_info and user_info.fullName %}
+            <p>Welcome, {{ user_info.fullName }}!</p>
+        {% else %}
+            <p>Welcome!</p>
+        {% endif %}
     </div>
 </div>
 
@@ -15,7 +18,7 @@
     </div>
 </div>
 
-<!-- Dialoge hier einbinden -->
+
 {% include 'filter_geo_dialog.html' %}
 {% include 'filter_type_dialog.html' %}
 {% include 'filter_theme_dialog.html' %}
@@ -23,16 +26,16 @@
 
 <div class="content">
     {% for location in locations %}
-    {% if loop.index0 % 4 == 0 %}
-    {% if loop.index0 != 0 %}
-</div>
-{% endif %}
-<div class="row">
-    {% endif %}
-    <div class="col-md-3">
-        {% include 'location_preview.html' %}
-    </div>
+        {% if loop.index0 % 4 == 0 %}
+            {% if loop.index0 != 0 %}
+                </div>
+            {% endif %}
+            <div class="row">
+        {% endif %}
+        <div class="col-md-3">
+            {% include 'location_preview.html' %}
+        </div>
     {% endfor %}
-</div>
+    </div>
 </div>
 {% endblock %}
