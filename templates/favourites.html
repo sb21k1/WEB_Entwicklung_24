@@ -1,0 +1,25 @@
+{% extends "base.html" %} {% block content %}
+
+
+<div class="content">
+    <div>
+        {% include 'header.html' %}
+    </div>
+</div>
+
+<div class="content">
+    {% for location in favourite_locations %}
+    {% if loop.index0 % 4 == 0 %}
+    {% if loop.index0 != 0 %}
+</div>
+{% endif %}
+
+<div class="row">
+    {% endif %}
+    <div class="col-md-3">
+        {% include 'location_preview.html' %}
+    </div>
+    {% endfor %}
+</div>
+</div>
+{% endblock %}
