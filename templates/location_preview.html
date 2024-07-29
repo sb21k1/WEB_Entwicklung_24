@@ -1,21 +1,103 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Location Preview</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<style>
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+    }
+
+    .carousel-control-prev-icon {
+        background-image: url('data:image/svg+xml;charset=UTF8,%3Csvg xmlns%3D"http%3A//www.w3.org/2000/svg" viewBox%3D"0 0 8 8"%3E%3Cpath fill%3D"%23fff" d%3D"M5.5 0l-4 4 4 4v-1.5l-2.5-2.5 2.5-2.5v-1.5z"/%3E%3C/svg%3E');
+    }
+
+    .carousel-control-next-icon {
+        background-image: url('data:image/svg+xml;charset=UTF8,%3Csvg xmlns%3D"http%3A//www.w3.org/2000/svg" viewBox%3D"0 0 8 8"%3E%3Cpath fill%3D"%23fff" d%3D"M2.5 0l4 4-4 4v-1.5l2.5-2.5-2.5-2.5v-1.5z"/%3E%3C/svg%3E');
+    }
+</style>
+
 <div class="location_preview_container">
+    <!-- Отображение первого изображения -->
     <div class="location_preview_image">
-        <img src="{{location.image}}">
+        {% if location.images %}
+        <img src="{{ location.images[0] }}" alt="Image for {{ location.name }}" class="img-fluid" data-toggle="modal"
+            data-target="#locationModal{{ location.name | replace(' ', '_') }}">
+        {% else %}
+        <p>No images available.</p>
+        {% endif %}
     </div>
+    <h2 class="location_preview_name">{{ location.name }}</h2>
+    <p>{{ location.description }}</p>
+    <p>Latitude: {{ location.latitude }}</p>
+    <p>Longitude: {{ location.longitude }}</p>
+    <p>Tags: {{ location.tags }}</p>
+</div>
 
-    <div class="short_content_info">
-        <div>
-            <h3 class="location_preview_name">{{location.name}}<h3>
-        </div>
+<!-- Модальные окна -->
+<div class="modal fade" id="locationModal{{ location.name | replace(' ', '_') }}" tabindex="-1" role="dialog"
+    aria-labelledby="locationModalLabel{{ location.name | replace(' ', '_') }}" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="locationModalLabel{{ location.name | replace(' ', '_') }}">{{
+                    location.name }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {% if location.images %}
+                <div id="carousel{{ location.name | replace(' ', '_') }}" class="carousel slide" data-ride="carousel">
+                    <div class="carousel-inner">
+                        {% for image in location.images %}
+                        <div class="carousel-item {% if loop.first %}active{% endif %}">
+                            <img src="{{ image }}" alt="Image for {{ location.name }}" class="d-block w-100">
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <a class="carousel-control-prev" href="#carousel{{ location.name | replace(' ', '_') }}"
+                        role="button" data-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Previous</span>
+                    </a>
+                    <a class="carousel-control-next" href="#carousel{{ location.name | replace(' ', '_') }}"
+                        role="button" data-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Next</span>
+                    </a>
+                </div>
+                {% endif %}
+                <p>{{ location.description }}</p>
+                <p>Latitude: {{ location.latitude }}</p>
+                <p>Longitude: {{ location.longitude }}</p>
+                <p>Tags: {{ location.tags }}</p>
+            </div>
+            <div id="map-container">
 
-        <div class="location_preview_description">
-            <p>{{location.description}}</p>
-        </div>
-        <div class="distance">
-            <p class="distance-text">5km</p>
-        </div>
-        <div class="userinfo">
-            <p class="userinfo-text">Places Team</p>
+                <div id="map"></div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
         </div>
     </div>
 </div>
+
+<script>
+    mapboxgl.accessToken = 'pk.eyJ1Ijoic2JrMjEiLCJhIjoiY2x3aHBkcGF2MGRvNzJpcGZmcW80c3djNCJ9.ut0vDzlCgM6Q10ZI52hpwQ';
+    var map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/light-v11',
+        center: [{{ location.latitude }}, {{ location.longitude }}], // Standardposition (Berlin)
+    zoom: 10
+        });
+</script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

@@ -1,24 +1,68 @@
 from flask import Flask, request, jsonify, redirect, url_for, render_template
-
+from firebase_admin import credentials, initialize_app, db, storage
+import firebase_admin
+import requests
 
 app = Flask(__name__)
 
-#später hier DB anbindung
-locations = [
-    {"name": "Location1", "description": "Beschreibung"},
-    {"name": "Location2", "description": "Beschreibung2"},
-    {"name": "Location3", "description": "Beschreibung3"},
-    {"name": "Location1", "description": "Beschreibung1"},
-    {"name": "Location2", "description": "Beschreibung2"},
-    {"name": "Location3", "description": "Beschreibung3"},
-    {"name": "Location1", "description": "Beschreibung1"},
-    {"name": "Location2", "description": "Beschreibung2"},
-    {"name": "Location3", "description": "Beschreibung3"},
-    {"name": "Location1", "description": "Beschreibung1"},
-    {"name": "Location2", "description": "Beschreibung2"},
-    {"name": "Location3", "description": "Beschreddibung3"}
-    
-]
+# Firebase Admin SDK initialization
+cred = credentials.Certificate('serviceKey.json')
+firebase_admin.initialize_app(cred, {
+    'databaseURL': 'https://places-de11a-default-rtdb.firebaseio.com',
+    'storageBucket': 'places-de11a.appspot.com'
+})
+
+def fetch_data():
+    ref = db.reference('locations')
+    data = ref.get()
+
+    locations = []
+    if data and isinstance(data, list):
+        for item in data:
+            if item is not None:
+                locations.append({
+                    'description': item.get('Beschreibung', ''),
+                    'latitude': item.get('geo', {}).get('latitude', ''),
+                    'longitude': item.get('geo', {}).get('longitude', ''),
+                    'name': item.get('name', ''),
+                    'tags': item.get('tags', '')
+                })
+    return locations
+
+def is_valid_image(url):
+    try:
+        response = requests.head(url, allow_redirects=True)
+        return response.headers.get('Content-Type', '').startswith('image/')
+    except requests.RequestException:
+        return False
+
+def fetch_images_for_locations(locations):
+    bucket = storage.bucket()
+    images = []
+
+    for location in locations:
+        folder_name = location['name']
+        blobs = bucket.list_blobs(prefix=f"{folder_name}/")
+        image_urls = []
+
+        for blob in blobs:
+            try:
+                image_url = blob.generate_signed_url(version='v4', expiration=3600)
+                if is_valid_image(image_url):
+                    image_urls.append(image_url)
+            except Exception as e:
+                print(f"Error generating URL for {blob.name}: {e}")
+
+        if image_urls:
+            images.append({
+                'name': location['name'],
+                'image_urls': image_urls
+            })
+        else:
+            print(f"No images found for location: {location['name']}")
+
+    return images
+
 tags = [
     {"type": "theme_tags", "name": "urban"},
     {"type": "theme_tags", "name": "park"},
@@ -71,21 +115,28 @@ tags = [
     {"type": "usecase_tags", "name": "Live-Streaming"}
 ]
 
-
-
 @app.route('/')
 def index():
-
-    return render_template('index.html', locations=locations, tags=tags)
+    locations = fetch_data()
+    images = fetch_images_for_locations(locations)
+    image_mapping = {img['name']: img['image_urls'] for img in images}
+    for location in locations:
+        location['images'] = image_mapping.get(location['name'], [])
+    uid = request.args.get('uid')
+    user_info = get_user_info(uid)
+    return render_template('index.html', uid=uid, user_info=user_info, locations=locations, tags=tags)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    
     return render_template('login.html')
 
 @app.route('/registration', methods=['GET', 'POST'])
 def registration():
     return render_template('registration.html')
+
+def get_user_info(uid):
+    ref = db.reference(f'users/{uid}')
+    return ref.get()
 
 if __name__ == '__main__':
     app.run(debug=True)

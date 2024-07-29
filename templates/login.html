@@ -54,7 +54,7 @@
                         last_login: new Date().toISOString()
                     });
                     alert('User logged in successfully');
-                    window.location.href = '/';
+                    window.location.href = `/?uid=${user.uid}`;
                 })
                 .catch((error) => {
                     const errorMessage = error.message;
