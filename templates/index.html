@@ -25,17 +25,19 @@
 {% include 'filter_usecase_dialog.html' %}
 
 <div class="content">
-    {% for location in locations %}
-    {% if loop.index0 % 4 == 0 %}
-    {% if loop.index0 != 0 %}
-</div>
-{% endif %}
-<div class="row">
-    {% endif %}
-    <div class="col-md-3">
-        {% include 'location_preview.html' %}
+    <div id="locations-container">
+        {% for location in locations %}
+        {% if loop.index0 % 4 == 0 %}
+        {% if loop.index0 != 0 %}
     </div>
-    {% endfor %}
+    {% endif %}
+    <div class="row">
+        {% endif %}
+        <div class="col-md-3">
+            {% include 'location_preview.html' %}
+        </div>
+        {% endfor %}
+    </div>
 </div>
 </div>
 
@@ -44,5 +46,4 @@
         {% include 'footer.html' %}
     </div>
 </div>
-
 {% endblock %}

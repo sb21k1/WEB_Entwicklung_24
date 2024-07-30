@@ -2,23 +2,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Location Preview</title>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-<style>
-    .carousel-control-prev-icon,
-    .carousel-control-next-icon {
-
-        border-radius: 50%;
-        width: 50px;
-        height: 50px;
-    }
-
-    .carousel-control-prev-icon {
-        background-image: url('data:image/svg+xml;charset=UTF8,%3Csvg xmlns%3D"http%3A//www.w3.org/2000/svg" viewBox%3D"0 0 8 8"%3E%3Cpath fill%3D"%23fff" d%3D"M5.5 0l-4 4 4 4v-1.5l-2.5-2.5 2.5-2.5v-1.5z"/%3E%3C/svg%3E');
-    }
-
-    .carousel-control-next-icon {
-        background-image: url('data:image/svg+xml;charset=UTF8,%3Csvg xmlns%3D"http%3A//www.w3.org/2000/svg" viewBox%3D"0 0 8 8"%3E%3Cpath fill%3D"%23fff" d%3D"M2.5 0l4 4-4 4v-1.5l2.5-2.5-2.5-2.5v-1.5z"/%3E%3C/svg%3E');
-    }
-</style>
 
 <div class="location_preview_container">
     <!-- Отображение первого изображения -->
@@ -31,10 +14,7 @@
         {% endif %}
     </div>
     <h2 class="location_preview_name">{{ location.name }}</h2>
-    <p>{{ location.description }}</p>
-    <p>Latitude: {{ location.latitude }}</p>
-    <p>Longitude: {{ location.longitude }}</p>
-    <p>Tags: {{ location.tags }}</p>
+    <p>distance</p>
 </div>
 
 <!-- Модальные окна -->

@@ -12,6 +12,10 @@
     line-height: 1;
 }
 
+.tag_template:active {
+    background-color: aqua;
+}
+
 .tag_template:hover {
     padding: 10px;
     transition: padding 0.3s ease;
@@ -56,4 +60,19 @@
     padding: 0px;
     margin: 0;
     margin-left: 5px;
+}
+
+
+/* Stil für ausgewählte Tags */
+
+.tag_template.selected {
+    background-color: #d0f0c0;
+    /* Ändere die Hintergrundfarbe, um ausgewählte Tags hervorzuheben */
+    border-color: #a0d0a0;
+    /* Ändere die Border-Farbe, um ausgewählte Tags hervorzuheben */
+}
+
+.tag_template.selected .tag_button {
+    font-weight: bold;
+    /* Ändere den Schriftstil, um hervorzuheben */
 }

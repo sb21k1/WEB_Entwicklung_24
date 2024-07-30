@@ -1,9 +1,10 @@
-from flask import Flask, request, jsonify, redirect, url_for, render_template
+from flask import Flask, request, jsonify, redirect, url_for, render_template, session
 from firebase_admin import credentials, initialize_app, db, storage
 import firebase_admin
 import requests
 
 app = Flask(__name__)
+selected_tags = []
 
 # Firebase Admin SDK initialization
 cred = credentials.Certificate('serviceKey.json')
@@ -25,9 +26,11 @@ def fetch_data():
                     'latitude': item.get('geo', {}).get('latitude', ''),
                     'longitude': item.get('geo', {}).get('longitude', ''),
                     'name': item.get('name', ''),
-                    'tags': item.get('tags', '')
+                    'tags': item.get('tags', [])  
                 })
+    print(locations)
     return locations
+
 
 def is_valid_image(url):
     try:
@@ -63,6 +66,8 @@ def fetch_images_for_locations(locations):
 
     return images
 
+
+
 tags = [
     {"type": "theme_tags", "name": "urban"},
     {"type": "theme_tags", "name": "park"},
@@ -95,9 +100,9 @@ tags = [
     {"type": "theme_tags", "name": "office"},
     {"type": "theme_tags", "name": "zoo"},
     
-    {"type": "type_tags", "name": "Historisch"},
+    {"type": "type_tags", "name": "Historic"},
     {"type": "type_tags", "name": "Modern"},
-    {"type": "type_tags", "name": "Industriell"},
+    {"type": "type_tags", "name": "Industrial"},
     {"type": "type_tags", "name": "Natur"},
     {"type": "type_tags", "name": "Urban"},
     {"type": "type_tags", "name": "Vintage"},
@@ -115,16 +120,39 @@ tags = [
     {"type": "usecase_tags", "name": "Live-Streaming"}
 ]
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
+    global selected_tags
     locations = fetch_data()
-    images = fetch_images_for_locations(locations)
+
+    if selected_tags:
+        filtered_locations = [
+            loc for loc in locations
+            if any(tag.lower().strip() in (tag_name.lower().strip() for tag_name in loc['tags'])
+            for tag in selected_tags)
+        ]
+    else:
+        filtered_locations = locations
+
+    images = fetch_images_for_locations(filtered_locations)
     image_mapping = {img['name']: img['image_urls'] for img in images}
-    for location in locations:
+
+    for location in filtered_locations:
         location['images'] = image_mapping.get(location['name'], [])
+
     uid = request.args.get('uid')
     user_info = get_user_info(uid)
-    return render_template('index.html', uid=uid, user_info=user_info, locations=locations, tags=tags)
+
+    return render_template('index.html', uid=uid, user_info=user_info, locations=filtered_locations, tags=tags)
+
+@app.route('/recieveTags', methods=['POST'])
+def recieveTags():
+    global selected_tags
+    if request.method == 'POST':
+        data = request.json
+        selected_tags = data.get('tags', [])
+        print('Ausgewählte Tags:', selected_tags)
+        return jsonify({'status': 'success'})
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
