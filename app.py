@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, redirect, url_for, render_template, session
-from firebase_admin import credentials, initialize_app, db, storage
+from firebase_admin import credentials, initialize_app, db, storage, auth
 import firebase_admin
 import requests
 
@@ -30,6 +30,21 @@ def fetch_data():
                 })
     print(locations)
     return locations
+
+def get_favorite_locations(uid):
+    user_ref = db.reference('users/' + uid + '/favorites')
+    favorites = user_ref.get()
+    all_locations = fetch_data()
+    
+    if favorites:
+        favorite_locations = [
+            location for location in all_locations
+            if location.get('id') in favorites
+        ]
+        return favorite_locations
+    return []
+
+
 
 
 def is_valid_image(url):
@@ -162,9 +177,56 @@ def login():
 def registration():
     return render_template('registration.html')
 
+@app.route('/favorites')
+def favorites():
+    uid = request.args.get('uid')
+    user_info = get_user_info(uid)
+    favorite_locations = get_favorite_locations(uid)
+    return render_template('favorites.html', uid=uid, user_info=user_info, locations=favorite_locations)
+
 def get_user_info(uid):
     ref = db.reference(f'users/{uid}')
     return ref.get()
+
+@app.route('/create_user', methods=['POST'])
+def create_user():
+    data = request.json
+    email = data.get('email')
+    password = data.get('password')
+    full_name = data.get('full_name')
+
+    try:
+        # Benutzer in Firebase Authentication erstellen
+        user = auth.create_user(
+            email=email,
+            password=password
+        )
+
+        # Benutzerdaten in die Realtime Database schreiben
+        user_data = {
+            'fullName': full_name,
+            'email': email,
+            'favorites': {}
+        }
+        db.reference(f'users/{user.uid}').set(user_data)
+
+        return jsonify({'message': 'User created successfully', 'uid': user.uid}), 201
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+
+@app.route('/add_favorite', methods=['POST'])
+def add_favorite():
+    data = request.json
+    user_id = data.get('user_id')
+    favorite = data.get('favorite')
+
+    try:
+        new_favorite_ref = db.reference(f'users/{user_id}/favorites').push()
+        new_favorite_ref.set(favorite)
+        return jsonify({'message': 'Favorite added successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+
 
 if __name__ == '__main__':
     app.run(debug=True)

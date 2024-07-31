@@ -1,72 +1,57 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, set, ref, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-// Your web app's Firebase configuration
-const firebaseConfig = {
-    apiKey: "AIzaSyCvaudn5y9Lc7sB1U7b3iJNh1OhMgilmis",
-    authDomain: "places-de11a.firebaseapp.com",
-    databaseURL: "https://places-de11a-default-rtdb.firebaseio.com",
-    projectId: "places-de11a",
-    storageBucket: "places-de11a.appspot.com",
-    messagingSenderId: "270159356467",
-    appId: "1:270159356467:web:836fcefca3437bf397b946"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-const auth = getAuth();
-
-document.getElementById('signup').addEventListener('click', (e) => {
-    e.preventDefault();
+function registerUser(event) {
+    event.preventDefault();
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
-    const full_name = document.getElementById('full_name').value;
+    const fullName = document.getElementById('full_name').value;
 
-    if (!email || !password || !full_name) {
-        alert('Please fill all fields');
-        return;
-    }
-
-    createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-            const user = userCredential.user;
-            // Write user data to the database
-            set(ref(db, 'users/' + user.uid), {
-                fullName: full_name,
-                email: email
-            });
-            alert('User created successfully');
+    fetch('/create_user', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, password, full_name: fullName }),
         })
-        .catch((error) => {
-            const errorMessage = error.message;
-            alert(errorMessage);
+        .then(response => response.json())
+        .then(data => {
+            if (data.uid) {
+                alert('User created successfully');
+                // Hier können Sie weitere Aktionen nach erfolgreicher Registrierung durchführen
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            alert('Error: ' + error.message);
         });
-});
+}
 
-document.getElementById('login').addEventListener('click', (e) => {
-    e.preventDefault();
+// Funktion zum Einloggen eines Benutzers
+function loginUser(event) {
+    event.preventDefault();
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
 
-    if (!email || !password) {
-        alert('Please fill all fields');
-        return;
-    }
-
-    signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-            const user = userCredential.user;
-            // Update last login
-            update(ref(db, 'users/' + user.uid), {
-                last_login: new Date().toISOString()
-            });
-            alert('User logged in successfully');
+    fetch('/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, password }),
         })
-        .catch((error) => {
-            const errorMessage = error.message;
-            alert(errorMessage);
+        .then(response => response.json())
+        .then(data => {
+            if (data.uid) {
+                alert('User logged in successfully');
+                // Hier können Sie weitere Aktionen nach erfolgreichem Login durchführen
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            alert('Error: ' + error.message);
         });
-});
+}
+
+// Event Listener für Registrierung und Login
+document.getElementById('register').addEventListener('click', registerUser);
+document.getElementById('login').addEventListener('click', loginUser);

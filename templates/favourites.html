@@ -10,24 +10,7 @@
         <p>Welcome!</p>
         {% endif %}
     </div>
-    <div>
-    {%if user_info%}
-    <button class="button" id="favourites_button">Favs</button>
-    {%endif%}
-    </div>
 </div>
-
-<div class="content">
-    <div>
-        {% include 'filter_bar.html' %}
-    </div>
-</div>
-
-<!-- Dialoge hier einbinden -->
-{% include 'filter_geo_dialog.html' %}
-{% include 'filter_type_dialog.html' %}
-{% include 'filter_theme_dialog.html' %}
-{% include 'filter_usecase_dialog.html' %}
 
 <div class="content">
     <div id="locations-container">
