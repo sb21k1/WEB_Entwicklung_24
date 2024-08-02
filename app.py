@@ -39,17 +39,26 @@ def fetch_data():
     return locations
 
 def get_favorite_locations(uid):
-    user_ref = db.reference('users/' + uid + '/favorites')
+    user_ref = db.reference(f'users/{uid}/favorites')
     favorites = user_ref.get()
     all_locations = fetch_data()
-    
+
     if favorites:
         favorite_locations = [
             location for location in all_locations
-            if location.get('id') in favorites
+            if location['name'] in favorites
         ]
+
+        images = fetch_images_for_locations(favorite_locations)
+        image_mapping = {img['name']: img['image_urls'] for img in images}
+
+        for location in favorite_locations:
+            location['images'] = image_mapping.get(location['name'], [])
+        
         return favorite_locations
     return []
+
+
 
 def is_valid_image(url):
     try:
@@ -260,70 +269,44 @@ def login_user():
 
 @app.route('/set_favorite', methods=['POST'])
 def set_favorite():
-    
     data = request.json
-    uid = session.get('user_id')  
-    location_id = data.get('favorite')
-    
+    uid = session.get('user_id')
+    location_name = data.get('favorite')
+
     if not uid:
         return jsonify({'status': 'error', 'message': 'User not authenticated'}), 401
-    
-    if not location_id:
-        return jsonify({'status': 'error', 'message': 'Location ID not provided'}), 400
-    
+
+    if not location_name:
+        return jsonify({'status': 'error', 'message': 'Location name not provided'}), 400
+
     try:
-        user_ref = db.reference(f'users/{uid}')
-        user_data = user_ref.get()
-
-      
-        if not user_data:
-            return jsonify({'status': 'error', 'message': 'User not found'}), 404
-
-        favorites_ref = user_ref.child('favorites')
-        favorites = favorites_ref.get()
-
-        
-        if not favorites:
-            favorites = [location_id]
-            favorites_ref.set(favorites)
-            return jsonify({'status': 'added'})
-        else:
-            if location_id not in favorites:
-                favorites.append(location_id)
-                favorites_ref.set(favorites)
-                return jsonify({'status': 'added'})
-            else:
-                return jsonify({'status': 'already_favorite'})
+        user_ref = db.reference(f'users/{uid}/favorites')
+        user_ref.child(location_name).set(True)
+        return jsonify({'status': 'added'})
     except Exception as e:
         print(f"Error adding favorite: {str(e)}")
         return jsonify({'status': 'error', 'message': 'Database error'}), 500
-
 
 @app.route('/delete_favorite', methods=['POST'])
 def delete_favorite():
     data = request.json
     uid = session.get('user_id')
-    location_id = data.get('favorite')
-    
+    location_name = data.get('favorite')
+
     if not uid:
         return jsonify({'status': 'error', 'message': 'User not authenticated'}), 401
-    
-    if not location_id:
-        return jsonify({'status': 'error', 'message': 'Location ID not provided'}), 400
-    
+
+    if not location_name:
+        return jsonify({'status': 'error', 'message': 'Location name not provided'}), 400
+
     try:
         user_ref = db.reference(f'users/{uid}/favorites')
-        favorites = user_ref.get() or []
-        
-        if location_id in favorites:
-            favorites.remove(location_id)
-            user_ref.set(favorites)
-            return jsonify({'status': 'removed'})
-        else:
-            return jsonify({'status': 'not_in_favorites'})
+        user_ref.child(location_name).delete()
+        return jsonify({'status': 'removed'})
     except Exception as e:
         print(f"Error removing favorite: {str(e)}")
         return jsonify({'status': 'error', 'message': 'Database error'}), 500
+
     
 @app.route('/logout', methods=['POST'])
 def logout():
