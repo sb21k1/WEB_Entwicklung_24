@@ -23,11 +23,13 @@
         <div class="modal-content">
             <div class="modal-header border-0">
                 <h3 class="modal-title">{{ location.name }}</h3>
-                <button class="favorite-btn" data-location-id="{{ location.id }}" onclick="toggleFavorite(this)">
-                    {% if location.id in user_info.favorites %}
+                <button class="favorite-btn" data-location-name="{{ location.name }}" onclick="toggleFavorite(this)">
+                    {% if user_info is not none %}
+                    {% if location.name in user_info.favorites %}
                     ❤️ Unfavorite
                     {% else %}
                     🤍 Favorite
+                    {% endif %}
                     {% endif %}
                 </button>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -105,36 +107,33 @@
         .addTo(map);
     });
 
-    <script>
-        function toggleFavorite(button) {
-        var locationId = button.getAttribute('data-location-id');
+
+    function toggleFavorite(button) {
+        var locationName = button.getAttribute('data-location-name');
         var isFavorite = button.innerHTML.includes('❤️');
         var url = isFavorite ? '/delete_favorite' : '/set_favorite';
 
-        console.log('Sending request to:', url);
-        console.log('Location ID:', locationId);
-
         fetch(url, {
             method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
+            headers: {
+                'Content-Type': 'application/json',
             },
-        body: JSON.stringify({
-            user_id: '{{ user_info.uid }}',
-        favorite: locationId
+            body: JSON.stringify({
+                favorite: locationName
             }),
         })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Response:', data);
-        if (data.status === 'added') {
-            button.innerHTML = '❤️ Unfavorite';
-            } else if (data.status === 'removed') {
-            button.innerHTML = '🤍 Favorite';
-            }
-        })
-        .catch(error => console.error('Error:', error));
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'added') {
+                    button.innerHTML = '❤️ Unfavorite';
+                } else if (data.status === 'removed') {
+                    button.innerHTML = '🤍 Favorite';
+                }
+            })
+            .catch(error => console.error('Error:', error));
     }
+
+
 </script>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
