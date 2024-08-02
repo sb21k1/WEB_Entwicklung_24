@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(response => response.json())
             .then(result => {
                 console.log(`Server-Antwort: ${result.status}`);
-                // Reload page after successful POST request
+
                 window.location.reload();
             })
             .catch(error => {

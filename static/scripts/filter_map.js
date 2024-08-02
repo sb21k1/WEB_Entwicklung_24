@@ -46,7 +46,7 @@ function loadSavedLocation() {
 
         setupMap(userLocation);
 
-        var savedRadius = localStorage.getItem('circleRadius') || 0; // default to 10 if not set
+        var savedRadius = localStorage.getItem('circleRadius') || 0;
         document.getElementById('myRange').value = savedRadius;
         addCircle(userLocation, savedRadius);
         updateBounds(userLocation, savedRadius);
