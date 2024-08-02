@@ -2,9 +2,16 @@ from flask import Flask, request, jsonify, redirect, url_for, render_template, s
 from firebase_admin import credentials, initialize_app, db, storage, auth
 import firebase_admin
 import requests
+from math import radians, sin, cos, sqrt, atan2
+import secrets
 
 app = Flask(__name__)
+app.secret_key = secrets.token_hex(16)
+
 selected_tags = []
+max_distance = None
+user_lat = None
+user_lon = None
 
 # Firebase Admin SDK initialization
 cred = credentials.Certificate('serviceKey.json')
@@ -26,7 +33,8 @@ def fetch_data():
                     'latitude': item.get('geo', {}).get('latitude', ''),
                     'longitude': item.get('geo', {}).get('longitude', ''),
                     'name': item.get('name', ''),
-                    'tags': item.get('tags', [])  
+                    'tags': item.get('tags', []),
+                   
                 })
     print(locations)
     return locations
@@ -43,8 +51,6 @@ def get_favorite_locations(uid):
         ]
         return favorite_locations
     return []
-
-
 
 
 def is_valid_image(url):
@@ -80,6 +86,20 @@ def fetch_images_for_locations(locations):
             print(f"No images found for location: {location['name']}")
 
     return images
+
+
+def calculate_distance(lat1, lon1, lat2, lon2):
+    R = 6371  # Earth's radius in kilometers
+
+    lat1, lon1, lat2, lon2 = map(radians, [lat1, lon1, lat2, lon2])
+    dlat = lat2 - lat1
+    dlon = lon2 - lon1
+
+    a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+    c = 2 * atan2(sqrt(a), sqrt(1-a))
+    distance = R * c
+
+    return distance
 
 
 
@@ -137,17 +157,16 @@ tags = [
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    global selected_tags
+    global selected_tags, max_distance, user_lat, user_lon
+    
     locations = fetch_data()
+    filtered_locations = locations
 
-    if selected_tags:
-        filtered_locations = [
-            loc for loc in locations
-            if any(tag.lower().strip() in (tag_name.lower().strip() for tag_name in loc['tags'])
-            for tag in selected_tags)
-        ]
-    else:
-        filtered_locations = locations
+    if user_lat is not None and user_lon is not None:
+        for location in filtered_locations:
+            if location['latitude'] != "" and location['longitude'] != "":
+                distance = calculate_distance(user_lat, user_lon, float(location['latitude']), float(location['longitude']))
+                location['distance'] = round(distance, 2)
 
     images = fetch_images_for_locations(filtered_locations)
     image_mapping = {img['name']: img['image_urls'] for img in images}
@@ -155,19 +174,27 @@ def index():
     for location in filtered_locations:
         location['images'] = image_mapping.get(location['name'], [])
 
-    uid = request.args.get('uid')
-    user_info = get_user_info(uid)
+    user_info = session.get('user_info')
 
-    return render_template('index.html', uid=uid, user_info=user_info, locations=filtered_locations, tags=tags)
+    return render_template('index.html', user_info=user_info, locations=filtered_locations, tags=tags)
+   
+
+
 
 @app.route('/recieveTags', methods=['POST'])
 def recieveTags():
-    global selected_tags
+    global selected_tags, max_distance, user_lat, user_lon
     if request.method == 'POST':
         data = request.json
         selected_tags = data.get('tags', [])
+        max_distance = float(data.get('max_distance', 100))
+        user_lat = float(data.get('user_lat'))
+        user_lon = float(data.get('user_lon'))
         print('Ausgewählte Tags:', selected_tags)
+        print('Max Distance:', max_distance)
+        print('User Location:', user_lat, user_lon)
         return jsonify({'status': 'success'})
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -196,36 +223,99 @@ def create_user():
     full_name = data.get('full_name')
 
     try:
-        # Benutzer in Firebase Authentication erstellen
+       
         user = auth.create_user(
             email=email,
             password=password
         )
 
-        # Benutzerdaten in die Realtime Database schreiben
+        
         user_data = {
             'fullName': full_name,
             'email': email,
-            'favorites': {}
+            'favorites': {
+                '0': 'placeholder'  
+            }
         }
+        print(full_name, email)
         db.reference(f'users/{user.uid}').set(user_data)
 
         return jsonify({'message': 'User created successfully', 'uid': user.uid}), 201
     except Exception as e:
         return jsonify({'error': str(e)}), 400
-
-@app.route('/add_favorite', methods=['POST'])
-def add_favorite():
+    
+@app.route('/login_user', methods=['POST'])
+def login_user():
     data = request.json
-    user_id = data.get('user_id')
-    favorite = data.get('favorite')
+    email = data.get('email')
+    password = data.get('password')
 
     try:
-        new_favorite_ref = db.reference(f'users/{user_id}/favorites').push()
-        new_favorite_ref.set(favorite)
-        return jsonify({'message': 'Favorite added successfully'}), 200
+        user = auth.get_user_by_email(email)
+        user_info = get_user_info(user.uid)
+        session['user_info'] = user_info
+        return jsonify({'message': 'User logged in successfully', 'uid': user.uid}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 400
+
+    
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('index'))
+
+
+@app.route('/set_favorite', methods=['POST'])
+def set_favorite():
+    data = request.json
+    uid = session.get('user_info', {}).get('uid')
+    location_id = data.get('favorite')
+    
+    if not uid:
+        return jsonify({'status': 'error', 'message': 'User not authenticated'}), 401
+    
+    if not location_id:
+        return jsonify({'status': 'error', 'message': 'Location ID not provided'}), 400
+    
+    try:
+        user_ref = db.reference(f'users/{uid}/favorites')
+        favorites = user_ref.get() or []
+        
+        if location_id not in favorites:
+            favorites.append(location_id)
+            user_ref.set(favorites)
+            return jsonify({'status': 'added'})
+        else:
+            return jsonify({'status': 'already_favorite'})
+    except Exception as e:
+        print(f"Error adding favorite: {str(e)}")
+        return jsonify({'status': 'error', 'message': 'Database error'}), 500
+
+@app.route('/delete_favorite', methods=['POST'])
+def delete_favorite():
+    data = request.json
+    uid = session.get('user_info', {}).get('uid')
+    location_id = data.get('favorite')
+    
+    if not uid:
+        return jsonify({'status': 'error', 'message': 'User not authenticated'}), 401
+    
+    if not location_id:
+        return jsonify({'status': 'error', 'message': 'Location ID not provided'}), 400
+    
+    try:
+        user_ref = db.reference(f'users/{uid}/favorites')
+        favorites = user_ref.get() or []
+        
+        if location_id in favorites:
+            favorites.remove(location_id)
+            user_ref.set(favorites)
+            return jsonify({'status': 'removed'})
+        else:
+            return jsonify({'status': 'not_in_favorites'})
+    except Exception as e:
+        print(f"Error removing favorite: {str(e)}")
+        return jsonify({'status': 'error', 'message': 'Database error'}), 500
 
 
 if __name__ == '__main__':

@@ -1,78 +1,61 @@
 .tag_template {
-    padding: 10px;
-    margin: 8px;
-    background-color: #f0f0f0;
-    border: 1px solid #ccc;
-    border-radius: 25px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 8px 16px;
+    margin: 4px;
+    background-color: #f7f7f7;
+    border: none;
+    border-radius: 30px;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
-    min-height: 20px;
-    line-height: 1;
-}
-
-.tag_template:active {
-    background-color: aqua;
+    transition: all 0.2s ease;
+    font-size: 14px;
+    color: #484848;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
 .tag_template:hover {
-    padding: 10px;
-    transition: padding 0.3s ease;
+    background-color: #ebebeb;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.tag_template:not(:hover) {
-    padding: 7px;
-    transition: padding 0.3s ease;
+.tag_template:active {
+    background-color: #e0e0e0;
+    transform: translateY(0);
 }
 
 .delete_tag {
-    display: none;
-    flex-direction: column;
+    display: inline-flex;
     justify-content: center;
     align-items: center;
-    width: min-content;
+    width: 20px;
+    height: 20px;
     background-color: transparent;
-    border: transparent;
+    border: none;
     cursor: pointer;
-    text-align: center;
+    margin-left: 8px;
+    padding: 0;
+    opacity: 0;
+    transition: opacity 0.2s ease;
     outline: none;
-    margin: 0px;
-    padding: 0px;
-}
-
-.delete_tag:focus {
-    background-color: transparent;
-    border: transparent;
-    outline: none;
-    box-shadow: none;
-}
-
-.delete_tag:hover {
-    background-color: transparent;
-    border: transparent;
-    z-index: 2;
 }
 
 .tag_name {
-    font-style: oblique;
-    display: block;
-    padding: 0px;
-    margin: 0;
+    font-style: normal;
     margin-left: 5px;
 }
 
-
-/* Stil für ausgewählte Tags */
-
 .tag_template.selected {
-    background-color: #d0f0c0;
-    /* Ändere die Hintergrundfarbe, um ausgewählte Tags hervorzuheben */
-    border-color: #a0d0a0;
-    /* Ändere die Border-Farbe, um ausgewählte Tags hervorzuheben */
+    background-color: #FF385C;
+    color: #ffffff;
+    box-shadow: 0 2px 4px rgba(255, 56, 92, 0.2);
 }
 
 .tag_template.selected .tag_button {
-    font-weight: bold;
-    /* Ändere den Schriftstil, um hervorzuheben */
+    font-weight: 600;
+}
+
+.tag_template:focus,
+.delete_tag:focus {
+    outline: none;
 }

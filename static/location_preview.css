@@ -1,68 +1,103 @@
-            .location_preview_container {
-                display: inline-flex;
-                flex-wrap: wrap;
-                justify-content: space-between;
-                width: 100%;
-                margin: 10px;
-                background-color: #ffffff;
-            }
-            
-            @media screen and (max-width: 768px) {
-                .location_preview_container {
-                    width: calc(25% - 20px);
-                }
-            }
-            
-            @media screen and (max-width: 600px) {
-                .location_preview_container {
-                    width: calc(50% - 20px);
-                    /* Bei sehr kleinen Bildschirmen zwei Elemente pro Reihe */
-                }
-            }
-            
-            .location_preview_name {
-                background-color: none;
-            }
-            
-            .short_content_info {
-                padding: 5px;
-                align-items: first baseline;
-            }
-            
-            .content_preview_name {
-                padding: 0;
-                padding-top: 10px;
-                margin: 0;
-            }
-            
-            .location_preview_image {
-                padding-bottom: 0%;
-                background-color: #f5f5f5;
-                width: 100%;
-                aspect-ratio: 1;
-                border-radius: 25px;
-                overflow: hidden;
-                box-shadow: 0 2px 4px rgba(0, 0.1, 0.1, 0.4);
-                /* Adjusted values */
-            }
-            
-            .location_preview_description {
-                font-size: 15px;
-                font-weight: lighter;
-                text-align: justify;
-            }
-            
-            .carousel-control-prev-icon,
-            .carousel-control-next-icon {
-                border-radius: 50%;
-                width: 50px;
-                height: 50px;
-            }
-            
-            .carousel-control-prev-icon {
-                background-image: url('data:image/svg+xml;charset=UTF8,%3Csvg xmlns%3D"http%3A//www.w3.org/2000/svg" viewBox%3D"0 0 8 8"%3E%3Cpath fill%3D"%23fff" d%3D"M5.5 0l-4 4 4 4v-1.5l-2.5-2.5 2.5-2.5v-1.5z"/%3E%3C/svg%3E');
-            }
-            
-            .carousel-control-next-icon {
-                background-image: url('data:image/svg+xml;charset=UTF8,%3Csvg xmlns%3D"http%3A//www.w3.org/2000/svg" viewBox%3D"0 0 8 8"%3E%3Cpath fill%3D"%23fff" d%3D"M2.5 0l4 4-4 4v-1.5l2.5-2.5-2.5-2.5v-1.5z"/%3E%3C/svg%3E');
-            }
+.location_preview_container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 300px;
+    margin: 15px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    transition: transform 0.2s, box-shadow 0.2s;
+    overflow: hidden;
+}
+
+.location_preview_container:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.location_preview_image {
+    width: 100%;
+    aspect-ratio: 1;
+    overflow: hidden;
+    position: relative;
+}
+
+.location_preview_image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+}
+
+.location_preview_container:hover .location_preview_image img {
+    transform: scale(1.05);
+}
+
+.short_content_info {
+    padding: 16px;
+}
+
+.location_preview_name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #222222;
+    margin-bottom: 4px;
+}
+
+.location_preview_description {
+    font-size: 14px;
+    color: #717171;
+    margin-bottom: 8px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.location_preview_distance {
+    font-size: 14px;
+    color: #717171;
+}
+
+.modal-dialog.modal-xl {
+    max-width: 100%;
+    margin: 0;
+    height: 100vh;
+}
+
+.modal-content {
+    border: none;
+    border-radius: 0;
+    height: 100%;
+}
+
+.modal-body {
+    padding: 0;
+    overflow-y: auto;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px;
+}
+
+.col-md-7,
+.col-md-5 {
+    margin-bottom: 32px;
+}
+
+p,
+.badge {
+    display: block;
+    margin-bottom: 16px;
+}
+
+.badge {
+    display: inline-block;
+}
+
+#map-container- {
+    height: 300px;
+}

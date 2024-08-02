@@ -14,59 +14,10 @@
             <input type="email" id="email" placeholder="Email">
             <input type="password" id="password" placeholder="Password">
             <input type="button" id="login" value="Login" />
-            <input type="button" id="register" value="Not registered?" />
+            <input type="button" id="register" value="Not registered?" onclick="window.location.href='/registration'" />
         </div>
     </div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getDatabase, ref, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyCvaudn5y9Lc7sB1U7b3iJNh1OhMgilmis",
-            authDomain: "places-de11a.firebaseapp.com",
-            databaseURL: "https://places-de11a-default-rtdb.firebaseio.com",
-            projectId: "places-de11a",
-            storageBucket: "places-de11a.appspot.com",
-            messagingSenderId: "270159356467",
-            appId: "1:270159356467:web:836fcefca3437bf397b946"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        const auth = getAuth();
-
-        document.getElementById('login').addEventListener('click', (e) => {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-
-            if (!email || !password) {
-                alert('Please fill all fields');
-                return;
-            }
-
-            signInWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    const user = userCredential.user;
-                    update(ref(db, 'users/' + user.uid), {
-                        last_login: new Date().toISOString()
-                    });
-                    alert('User logged in successfully');
-                    window.location.href = `/?uid=${user.uid}`;
-                })
-                .catch((error) => {
-                    const errorMessage = error.message;
-                    alert(errorMessage);
-                });
-        });
-
-        document.getElementById('register').addEventListener('click', (e) => {
-            e.preventDefault();
-            window.location.href = '/registration';
-        });
-    </script>
+    <script src="{{ url_for('static', filename='scripts/login.js') }}"></script>
 </body>
 
 </html>

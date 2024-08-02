@@ -1,3 +1,17 @@
+document.addEventListener('DOMContentLoaded', function() {
+    const signupButton = document.getElementById('signup');
+    if (signupButton) {
+        signupButton.addEventListener('click', registerUser);
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const signupButton = document.getElementById('login');
+    if (signupButton) {
+        signupButton.addEventListener('click', loginUser);
+    }
+});
+
 function registerUser(event) {
     event.preventDefault();
     const email = document.getElementById('email').value;
@@ -15,7 +29,7 @@ function registerUser(event) {
         .then(data => {
             if (data.uid) {
                 alert('User created successfully');
-                // Hier können Sie weitere Aktionen nach erfolgreicher Registrierung durchführen
+                window.location.href = '/login';
             } else {
                 alert('Error: ' + data.error);
             }
@@ -25,13 +39,17 @@ function registerUser(event) {
         });
 }
 
-// Funktion zum Einloggen eines Benutzers
-function loginUser(event) {
-    event.preventDefault();
+document.getElementById('login').addEventListener('click', (e) => {
+    e.preventDefault();
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
 
-    fetch('/login', {
+    if (!email || !password) {
+        alert('Please fill all fields');
+        return;
+    }
+
+    fetch('/login_user', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -42,7 +60,7 @@ function loginUser(event) {
         .then(data => {
             if (data.uid) {
                 alert('User logged in successfully');
-                // Hier können Sie weitere Aktionen nach erfolgreichem Login durchführen
+                window.location.href = '/';
             } else {
                 alert('Error: ' + data.error);
             }
@@ -50,8 +68,18 @@ function loginUser(event) {
         .catch(error => {
             alert('Error: ' + error.message);
         });
-}
+});
 
-// Event Listener für Registrierung und Login
-document.getElementById('register').addEventListener('click', registerUser);
-document.getElementById('login').addEventListener('click', loginUser);
+
+document.addEventListener('DOMContentLoaded', function() {
+    const registerForm = document.getElementById('register-form');
+    const loginForm = document.getElementById('login-form');
+
+    if (registerForm) {
+        registerForm.addEventListener('submit', registerUser);
+    }
+
+    if (loginForm) {
+        loginForm.addEventListener('login', loginUser);
+    }
+});

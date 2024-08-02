@@ -4,12 +4,12 @@
 <div class="content">
     <div>
         {% include 'header.html' %}
-        {% if user_info and user_info.fullName %}
-        <p>Welcome, {{ user_info.fullName }}!</p>
-        {% else %}
-        <p>Welcome!</p>
-        {% endif %}
     </div>
+</div>
+<div>
+    {%if not locations%}
+    <h1>No favorites found...</h1>
+    {%endif%}
 </div>
 
 <div class="content">

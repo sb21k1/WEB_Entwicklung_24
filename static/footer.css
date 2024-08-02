@@ -2,22 +2,39 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    height: fit-content;
-    width: max;
-    background-color: #f1f1f1;
-    padding: 10px;
+    width: 100%;
+    background-color: #F7F7F7;
+    border-top: 1px solid #DDDDDD;
+    padding: 20px 0;
 }
 
 .footer_content {
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 15px;
+    gap: 30px;
+    max-width: 1080px;
+    width: 100%;
+    padding: 0 20px;
 }
 
-.footer_content h6,
-.footer_content p {
-    align-items: center;
+.footer_content h6 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #222222;
     margin: 0;
-    padding: 5px;
+}
+
+.footer_content p {
+    font-size: 14px;
+    color: #717171;
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .footer_content {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
 }

@@ -25,25 +25,28 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.querySelector('.search_button_contents').addEventListener('click', () => {
-        if (selectedTags.length > 0) {
-            fetch('/recieveTags', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ tags: selectedTags }),
+        const maxDistance = document.getElementById('myRange').value;
+        const userLocation = JSON.parse(localStorage.getItem('userLocation'));
+        fetch('/recieveTags', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    tags: selectedTags,
+                    max_distance: maxDistance,
+                    user_lat: userLocation[1],
+                    user_lon: userLocation[0]
                 })
-                .then(response => response.json())
-                .then(result => {
-                    console.log(`Server-Antwort: ${result.status}`);
-                    // Reload page after successful POST request
-                    window.location.reload();
-                })
-                .catch(error => {
-                    console.error('Fehler beim Senden der Anfrage:', error);
-                });
-        } else {
-            console.log('Keine Tags ausgewählt.');
-        }
+            })
+            .then(response => response.json())
+            .then(result => {
+                console.log(`Server-Antwort: ${result.status}`);
+                // Reload page after successful POST request
+                window.location.reload();
+            })
+            .catch(error => {
+                console.error('Fehler beim Senden der Anfrage:', error);
+            });
     });
 });

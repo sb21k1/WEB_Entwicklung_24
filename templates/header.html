@@ -3,19 +3,33 @@
         <div class="col-md-2">
             <img src='' class="img-fluid">
         </div>
-        <div class="col-md-8">
+    </div>
+
+    <div>
+        {% if user_info and user_info.fullName %}
+        <p>Welcome, {{ user_info.fullName }}!</p>
+        {% else %}
+        <p>Welcome!</p>
+        {% endif %}
+    </div>
+    <div>
+        {%if user_info%}
+        <button class="button" id="favourites_button">Favs</button>
+        {%endif%}
+    </div>
+    <div class="col-md-8">
+
+    </div>
+    <div class="col-md-2 text-right">
+        <div class="login_register">
+
+            <button class="login_register_button" id="login_button"
+                onclick="window.location.href='/login';">login</button>
+            <p style="display: inline;">/</p>
+            <button class="login_register_button" id="register_button"
+                onclick="window.location.href='/registration';">register</button>
 
         </div>
-        <div class="col-md-2 text-right">
-            <div class="login_register">
-                
-                <button class="login_register_button" id="login_button"
-                    onclick="window.location.href='/login';">login</button>
-                <p style="display: inline;">/</p>
-                <button class="login_register_button" id="register_button"
-                    onclick="window.location.href='/registration';">register</button>
-                
-            </div>
-        </div>
     </div>
+</div>
 </div>

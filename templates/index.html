@@ -4,17 +4,6 @@
 <div class="content">
     <div>
         {% include 'header.html' %}
-        {% if user_info and user_info.fullName %}
-        <p>Welcome, {{ user_info.fullName }}!</p>
-        {% else %}
-        <p>Welcome!</p>
-        {% endif %}
-    </div>
-    <div>
-    {%if user_info%}
-    <button class="button" id="favourites_button">Favs</button>
-    {%endif%}
-    </div>
 </div>
 
 <div class="content">

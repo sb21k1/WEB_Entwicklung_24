@@ -14,70 +14,132 @@
         {% endif %}
     </div>
     <h2 class="location_preview_name">{{ location.name }}</h2>
-    <p>distance</p>
+    <h2 class="location_preview_name" id="distance">{{location.distance}} km</h2>
+    <button class="favorite-btn" data-location-id="{{ location.id }}" onclick="toggleFavorite(this)">
+        {%if user_info is not none%}
+        {% if location.id in user_info.favorites%}
+        ❤️ Unfavorite
+        {% else %}
+        🤍 Favorite
+        {% endif %}
+        {% endif %}
+    </button>
+
 </div>
 
-<!-- Модальные окна -->
 <div class="modal fade" id="locationModal{{ location.name | replace(' ', '_') }}" tabindex="-1" role="dialog"
-    aria-labelledby="locationModalLabel{{ location.name | replace(' ', '_') }}" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="locationModalLabel{{ location.name | replace(' ', '_') }}">{{
-                    location.name }}</h5>
+            <div class="modal-header border-0">
+                <h3 class="modal-title">{{ location.name }}</h3>
+                <button class="favorite-btn" data-location-id="{{ location.id }}" onclick="toggleFavorite(this)">
+                    {% if location.id in user_info.favorites %}
+                    ❤️ Unfavorite
+                    {% else %}
+                    🤍 Favorite
+                    {% endif %}
+                </button>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body p-0">
                 {% if location.images %}
                 <div id="carousel{{ location.name | replace(' ', '_') }}" class="carousel slide" data-ride="carousel">
                     <div class="carousel-inner">
-                        {% for image in location.images %}
+                        {% for i in range(0, location.images|length, 3) %}
                         <div class="carousel-item {% if loop.first %}active{% endif %}">
-                            <img src="{{ image }}" alt="Image for {{ location.name }}" class="d-block w-100">
+                            <div class="row">
+                                {% for j in range(3) %}
+                                {% if i+j < location.images|length %} <div class="col-md-4">
+                                    <img src="{{ location.images[i+j] }}" class="d-block w-100" alt="Image {{ i+j+1 }}">
+                            </div>
+                            {% endif %}
+                            {% endfor %}
                         </div>
-                        {% endfor %}
                     </div>
-                    <a class="carousel-control-prev" href="#carousel{{ location.name | replace(' ', '_') }}"
-                        role="button" data-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="sr-only">Previous</span>
-                    </a>
-                    <a class="carousel-control-next" href="#carousel{{ location.name | replace(' ', '_') }}"
-                        role="button" data-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="sr-only">Next</span>
-                    </a>
+                    {% endfor %}
                 </div>
-                {% endif %}
-                <p>{{ location.description }}</p>
-                <p>Latitude: {{ location.latitude }}</p>
-                <p>Longitude: {{ location.longitude }}</p>
-                <p>Tags: {{ location.tags }}</p>
+                <!-- Carousel controls remain the same -->
             </div>
-            <div id="map-container">
 
-                <div id="map"></div>
+            {% endif %}
 
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <div class="container mt-4">
+                <div class="row">
+                    <div class="col-md-7">
+                        <h4>About this place</h4>
+                        <p>{{ location.description }}</p>
+                        <div class="mt-4">
+                            <h5>Tags</h5>
+                            <div class="d-flex flex-wrap">
+                                {% for tag in location.tags %}
+                                <span class="badge badge-light mr-2 mb-2">{{ tag }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Location</h5>
+                                <p class="card-text">Latitude: {{ location.latitude }}</p>
+                                <p class="card-text">Longitude: {{ location.longitude }}</p>
+                                <h3 class="card-text" id="distance">Distance: {{ location.distance }} km</h3>
+                                <div id="map-container-{{ location.name | replace(' ', '_') }}" style="height: 200px;"
+                                    class="mt-3 rounded"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
+</div>
+
 
 <script>
-    mapboxgl.accessToken = 'pk.eyJ1Ijoic2JrMjEiLCJhIjoiY2x3aHBkcGF2MGRvNzJpcGZmcW80c3djNCJ9.ut0vDzlCgM6Q10ZI52hpwQ';
-    var map = new mapboxgl.Map({
-        container: 'map',
-        style: 'mapbox://styles/mapbox/light-v11',
-        center: [{{ location.latitude }}, {{ location.longitude }}], // Standardposition (Berlin)
-    zoom: 10
+    $('#locationModal{{ location.name | replace(' ', '_') }}').on('shown.bs.modal', function () {
+        mapboxgl.accessToken = 'pk.eyJ1Ijoic2JrMjEiLCJhIjoiY2x3aHBkcGF2MGRvNzJpcGZmcW80c3djNCJ9.ut0vDzlCgM6Q10ZI52hpwQ';
+        var map = new mapboxgl.Map({
+            container: 'map-container-{{ location.name | replace(' ', '_') }}',
+            style: 'mapbox://styles/mapbox/light-v11',
+            center: [{{ location.longitude }}, {{ location.latitude }}],
+        zoom: 12
         });
-</script>
 
+    new mapboxgl.Marker()
+        .setLngLat([{{ location.longitude }}, {{ location.latitude }}])
+        .addTo(map);
+    });
+
+    function toggleFavorite(button) {
+        var locationId = button.getAttribute('data-location-id');
+        var isFavorite = button.innerHTML.includes('❤️');
+        var url = isFavorite ? '/delete_favorite' : '/set_favorite';
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                user_id: '{{ user_info.uid }}',
+                favorite: locationId
+            }),
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'added') {
+                    button.innerHTML = '❤️ Unfavorite';
+                } else if (data.status === 'removed') {
+                    button.innerHTML = '🤍 Favorite';
+                }
+            });
+    }
+</script>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
