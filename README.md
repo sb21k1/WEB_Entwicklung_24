@@ -18,7 +18,7 @@ Dieses Repository ergänzt das [online notebook](https://armanmovs.github.io/pla
 (venv) C:\Users\me\projects\webapp> flask run
  ⁠
 
-*Step 5:* Besuche [http://127.0.0.1:5000](http://127.0.0.1:5000) um zur Startseite zu gelangen.
+*Step 5:* Besuche [http://127.0.0.1:5000](http://127.0.0.1:5000) um zur Startseite zu gelangen. Bitte warten Sie 10-15 Sekunden, bis die Webseite geöffnet wird. Die lange Wartezeit ist durch die Größe der Fotos verursacht.
 
 
 # Anmeldung / Registration
