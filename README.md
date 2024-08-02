@@ -23,6 +23,6 @@ Dieses Repository ergänzt das [online notebook](https://armanmovs.github.io/pla
 
 # Anmeldung / Registration
 
-**Wie?:** Sie haben die Möglichkeit, sich ein eigenes Kundenkonto zu erstellen. Z
+**Wie?:** Sie haben die Möglichkeit, sich ein eigenes Kundenkonto zu erstellen. 
 
 
