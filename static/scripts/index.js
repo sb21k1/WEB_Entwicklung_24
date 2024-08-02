@@ -58,3 +58,19 @@ if (navigator.geolocation) {
 document.getElementById('favourites_button').addEventListener('click', function() {
     window.location.href = '/favorites';
 });
+
+
+document.getElementById('logoutButton').addEventListener('click', function() {
+    fetch('{{ url_for("logout") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => {
+            if (response.redirected) {
+                window.location.href = response.url;
+            }
+        })
+        .catch(error => console.error('Error:', error));
+});
