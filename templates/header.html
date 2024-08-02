@@ -1,10 +1,6 @@
 <div class="header_container">
-    <div class="row mt-1 align-items-center">
-        <div class="col-md-2">
-            <img src='' class="img-fluid">
-        </div>
-        
-        <div class="col-md-8">
+    <div class="row align-items-center">
+        <div class="col-md-8 text-left">
             <div>
                 {% if user_info and user_info.fullName %}
                 <p>Welcome, {{ user_info.fullName }}!</p>
@@ -13,15 +9,17 @@
                 {% endif %}
             </div>
         </div>
-        
-        <div class="col-md-2 text-right">
+        <div class="col-md-4 text-right">
             <div class="login_register">
                 {% if user_info %}
+                <button class="button" id="logout_button" onclick="window.location.href='/logout';">Logout</button>
                 <button class="button" id="favourites_button" onclick="window.location.href='/favorites';">Favs</button>
                 {% else %}
-                <button class="login_register_button" id="login_button" onclick="window.location.href='/login';">login</button>
-                <p style="display: inline;">/</p>
-                <button class="login_register_button" id="register_button" onclick="window.location.href='/registration';">register</button>
+                <button class="login_register_button" id="login_button"
+                    onclick="window.location.href='/login';">login</button>
+                <p class="divider">/</p>
+                <button class="login_register_button" id="register_button"
+                    onclick="window.location.href='/registration';">register</button>
                 {% endif %}
             </div>
         </div>

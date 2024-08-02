@@ -13,7 +13,7 @@ max_distance = None
 user_lat = None
 user_lon = None
 
-# Firebase Admin SDK initialization
+
 cred = credentials.Certificate('serviceKey.json')
 firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://places-de11a-default-rtdb.firebaseio.com',
@@ -250,22 +250,19 @@ def login_user():
         user = auth.get_user_by_email(email)
         user_info = get_user_info(user.uid)
         session['user_info'] = user_info
-        session['user_id'] = user.uid  # Ensure user_id is set in the session
+        session['user_id'] = user.uid 
         print(f"User logged in: {session['user_info']}")
         return jsonify({'message': 'User logged in successfully', 'uid': user.uid}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 400
 
-@app.route('/logout')
-def logout():
-    session.clear()
-    return redirect(url_for('index'))
+
 
 @app.route('/set_favorite', methods=['POST'])
 def set_favorite():
     
     data = request.json
-    uid = session.get('user_id')  # Ensure we check session['user_id']
+    uid = session.get('user_id')  
     location_id = data.get('favorite')
     
     if not uid:
@@ -278,14 +275,14 @@ def set_favorite():
         user_ref = db.reference(f'users/{uid}')
         user_data = user_ref.get()
 
-        # Check if user_data exists
+      
         if not user_data:
             return jsonify({'status': 'error', 'message': 'User not found'}), 404
 
         favorites_ref = user_ref.child('favorites')
         favorites = favorites_ref.get()
 
-        # If favorites list doesn't exist, create it and add the location_id
+        
         if not favorites:
             favorites = [location_id]
             favorites_ref.set(favorites)
@@ -305,7 +302,7 @@ def set_favorite():
 @app.route('/delete_favorite', methods=['POST'])
 def delete_favorite():
     data = request.json
-    uid = session.get('user_id')  # Ensure we check session['user_id']
+    uid = session.get('user_id')
     location_id = data.get('favorite')
     
     if not uid:
@@ -327,6 +324,11 @@ def delete_favorite():
     except Exception as e:
         print(f"Error removing favorite: {str(e)}")
         return jsonify({'status': 'error', 'message': 'Database error'}), 500
+    
+@app.route('/logout', methods=['POST'])
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
 
 if __name__ == '__main__':
     app.run(debug=True)

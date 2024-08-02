@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
 <div class="location_preview_container">
-    <!-- Display first image -->
+
     <div class="location_preview_image">
         {% if location.images %}
         <img src="{{ location.images[0] }}" alt="Image for {{ location.name }}" class="img-fluid" data-toggle="modal"
@@ -15,15 +15,6 @@
     </div>
     <h2 class="location_preview_name">{{ location.name }}</h2>
     <h2 class="location_preview_name" id="distance">{{ location.distance }} km</h2>
-    <button class="favorite-btn" data-location-id="{{ location.id }}" onclick="toggleFavorite(this)">
-        {% if user_info is not none %}
-        {% if location.id in user_info.favorites %}
-        ❤️ Unfavorite
-        {% else %}
-        🤍 Favorite
-        {% endif %}
-        {% endif %}
-    </button>
 </div>
 
 <div class="modal fade" id="locationModal{{ location.name | replace(' ', '_') }}" tabindex="-1" role="dialog"
@@ -60,7 +51,7 @@
                     </div>
                     {% endfor %}
                 </div>
-                <!-- Carousel controls remain the same -->
+
             </div>
 
             {% endif %}
@@ -114,8 +105,8 @@
         .addTo(map);
     });
 
-<script>
-    function toggleFavorite(button) {
+    <script>
+        function toggleFavorite(button) {
         var locationId = button.getAttribute('data-location-id');
         var isFavorite = button.innerHTML.includes('❤️');
         var url = isFavorite ? '/delete_favorite' : '/set_favorite';
@@ -125,21 +116,21 @@
 
         fetch(url, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
+        headers: {
+            'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                user_id: '{{ user_info.uid }}',
-                favorite: locationId
+        body: JSON.stringify({
+            user_id: '{{ user_info.uid }}',
+        favorite: locationId
             }),
         })
         .then(response => response.json())
         .then(data => {
             console.log('Response:', data);
-            if (data.status === 'added') {
-                button.innerHTML = '❤️ Unfavorite';
+        if (data.status === 'added') {
+            button.innerHTML = '❤️ Unfavorite';
             } else if (data.status === 'removed') {
-                button.innerHTML = '🤍 Favorite';
+            button.innerHTML = '🤍 Favorite';
             }
         })
         .catch(error => console.error('Error:', error));

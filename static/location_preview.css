@@ -101,3 +101,25 @@ p,
 #map-container- {
     height: 300px;
 }
+
+.favorite-btn {
+    background-color: #ff385c;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    margin-left: 20px;
+}
+
+.favorite-btn:hover {
+    background-color: #e31c5f;
+    transform: scale(1.05);
+}
+
+.favorite-btn:active {
+    background-color: #b72d4a;
+}
