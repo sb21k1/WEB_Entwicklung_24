@@ -1,41 +1,35 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="content">
+<div class="wrapper d-flex flex-column min-vh-100">
     <div>
         {% include 'header.html' %}
-</div>
+    </div>
 
-<div class="content">
-    <div>
+    <div class="flex-grow-1">
         {% include 'filter_bar.html' %}
-    </div>
-</div>
 
-<!-- Dialoge hier einbinden -->
-{% include 'filter_geo_dialog.html' %}
-{% include 'filter_type_dialog.html' %}
-{% include 'filter_theme_dialog.html' %}
-{% include 'filter_usecase_dialog.html' %}
+        <!-- Dialogs -->
+        {% include 'filter_geo_dialog.html' %}
+        {% include 'filter_type_dialog.html' %}
+        {% include 'filter_theme_dialog.html' %}
+        {% include 'filter_usecase_dialog.html' %}
 
-<div class="content">
-    <div id="locations-container">
-        {% for location in locations %}
-        {% if loop.index0 % 4 == 0 %}
-        {% if loop.index0 != 0 %}
-    </div>
-    {% endif %}
-    <div class="row">
-        {% endif %}
-        <div class="col-md-3">
-            {% include 'location_preview.html' %}
+        <div id="locations-container">
+            {% for location in locations %}
+            {% if loop.index0 % 4 == 0 %}
+            {% if loop.index0 != 0 %}
         </div>
-        {% endfor %}
+        {% endif %}
+        <div class="row">
+            {% endif %}
+            <div class="col-md-3">
+                {% include 'location_preview.html' %}
+            </div>
+            {% endfor %}
+        </div>
     </div>
-</div>
-</div>
 
-<div class="content">
     <div>
         {% include 'footer.html' %}
     </div>

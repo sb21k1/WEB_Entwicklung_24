@@ -34,7 +34,6 @@ def fetch_data():
                     'longitude': item.get('geo', {}).get('longitude', ''),
                     'name': item.get('name', ''),
                     'tags': item.get('tags', []),
-                   
                 })
     print(locations)
     return locations
@@ -51,7 +50,6 @@ def get_favorite_locations(uid):
         ]
         return favorite_locations
     return []
-
 
 def is_valid_image(url):
     try:
@@ -87,7 +85,6 @@ def fetch_images_for_locations(locations):
 
     return images
 
-
 def calculate_distance(lat1, lon1, lat2, lon2):
     R = 6371  # Earth's radius in kilometers
 
@@ -101,48 +98,41 @@ def calculate_distance(lat1, lon1, lat2, lon2):
 
     return distance
 
-
-
 tags = [
-    {"type": "theme_tags", "name": "urban"},
-    {"type": "theme_tags", "name": "park"},
-    {"type": "theme_tags", "name": "café"},
-    {"type": "theme_tags", "name": "restaurant"},
-    {"type": "theme_tags", "name": "library"},
-    {"type": "theme_tags", "name": "museum"},
-    {"type": "theme_tags", "name": "historical"},
-    {"type": "theme_tags", "name": "modern"},
-    {"type": "theme_tags", "name": "bridge"},
-    {"type": "theme_tags", "name": "street"},
-    {"type": "theme_tags", "name": "train station"},
-    {"type": "theme_tags", "name": "subway"},
-    {"type": "theme_tags", "name": "harbor"},
-    {"type": "theme_tags", "name": "rooftop"},
-    {"type": "theme_tags", "name": "garden"},
-    {"type": "theme_tags", "name": "castle"},
-    {"type": "theme_tags", "name": "market"},
-    {"type": "theme_tags", "name": "warehouse"},
-    {"type": "theme_tags", "name": "studio"},
-    {"type": "theme_tags", "name": "theater"},
-    {"type": "theme_tags", "name": "concert hall"},
-    {"type": "theme_tags", "name": "mall"},
-    {"type": "theme_tags", "name": "temple"},
-    {"type": "theme_tags", "name": "church"},
-    {"type": "theme_tags", "name": "monument"},
-    {"type": "theme_tags", "name": "ruins"},
-    {"type": "theme_tags", "name": "hotel"},
-    {"type": "theme_tags", "name": "university"},
-    {"type": "theme_tags", "name": "office"},
-    {"type": "theme_tags", "name": "zoo"},
+    {"type": "theme_tags", "name": "Park"},
+    {"type": "theme_tags", "name": "Café"},
+    {"type": "theme_tags", "name": "Restaurant"},
+    {"type": "theme_tags", "name": "Library"},
+    {"type": "theme_tags", "name": "Museum"},
+    {"type": "theme_tags", "name": "Bridge"},
+    {"type": "theme_tags", "name": "Street"},
+    {"type": "theme_tags", "name": "Train station"},
+    {"type": "theme_tags", "name": "Subway"},
+    {"type": "theme_tags", "name": "Harbor"},
+    {"type": "theme_tags", "name": "Rooftop"},
+    {"type": "theme_tags", "name": "Castle"},
+    {"type": "theme_tags", "name": "Market"},
+    {"type": "theme_tags", "name": "Warehouse"},
+    {"type": "theme_tags", "name": "Studio"},
+    {"type": "theme_tags", "name": "Theater"},
+    {"type": "theme_tags", "name": "Concert Hall"},
+    {"type": "theme_tags", "name": "Mall"},
+    {"type": "theme_tags", "name": "Temple"},
+    {"type": "theme_tags", "name": "Church"},
+    {"type": "theme_tags", "name": "Monument"},
+    {"type": "theme_tags", "name": "Ruins"},
+    {"type": "theme_tags", "name": "Hotel"},
+    {"type": "theme_tags", "name": "University"},
+    {"type": "theme_tags", "name": "Office"},
     
     {"type": "type_tags", "name": "Historic"},
     {"type": "type_tags", "name": "Modern"},
     {"type": "type_tags", "name": "Industrial"},
-    {"type": "type_tags", "name": "Natur"},
+    {"type": "type_tags", "name": "Nature"},
     {"type": "type_tags", "name": "Urban"},
     {"type": "type_tags", "name": "Vintage"},
-    {"type": "type_tags", "name": "Künstlerisch"},
-    {"type": "type_tags", "name": "Kulturell"},
+    {"type": "type_tags", "name": "Artsy"},
+    {"type": "type_tags", "name": "Cultural"},
     {"type": "type_tags", "name": "Bauhaus"},
     
     {"type": "usecase_tags", "name": "Fotografie"},
@@ -151,22 +141,33 @@ tags = [
     {"type": "usecase_tags", "name": "Filmdreh"},
     {"type": "usecase_tags", "name": "Musikvideo"},
     {"type": "usecase_tags", "name": "Werbung"},
-    {"type": "usecase_tags", "name": "Social Media Content"},
-    {"type": "usecase_tags", "name": "Live-Streaming"}
+    {"type": "usecase_tags", "name": "Social Media Content"}
 ]
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     global selected_tags, max_distance, user_lat, user_lon
-    
     locations = fetch_data()
+
     filtered_locations = locations
 
-    if user_lat is not None and user_lon is not None:
+    if selected_tags or (user_lat is not None and user_lon is not None and max_distance is not None):
+        if selected_tags:
+            filtered_locations = [
+                loc for loc in filtered_locations
+                if any(tag.lower().strip() in (tag_name.lower().strip() for tag_name in loc['tags'])
+                for tag in selected_tags)
+            ]
+
+    if user_lat != None and user_lon != None and max_distance != 0:
+        new_filtered_locations = []
         for location in filtered_locations:
             if location['latitude'] != "" and location['longitude'] != "":
                 distance = calculate_distance(user_lat, user_lon, float(location['latitude']), float(location['longitude']))
                 location['distance'] = round(distance, 2)
+                if distance <= max_distance:
+                    new_filtered_locations.append(location)
+        filtered_locations = new_filtered_locations
 
     images = fetch_images_for_locations(filtered_locations)
     image_mapping = {img['name']: img['image_urls'] for img in images}
@@ -177,9 +178,6 @@ def index():
     user_info = session.get('user_info')
 
     return render_template('index.html', user_info=user_info, locations=filtered_locations, tags=tags)
-   
-
-
 
 @app.route('/recieveTags', methods=['POST'])
 def recieveTags():
@@ -195,7 +193,6 @@ def recieveTags():
         print('User Location:', user_lat, user_lon)
         return jsonify({'status': 'success'})
 
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     return render_template('login.html')
@@ -206,10 +203,14 @@ def registration():
 
 @app.route('/favorites')
 def favorites():
-    uid = request.args.get('uid')
-    user_info = get_user_info(uid)
-    favorite_locations = get_favorite_locations(uid)
-    return render_template('favorites.html', uid=uid, user_info=user_info, locations=favorite_locations)
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect(url_for('login'))
+    
+    user_info = get_user_info(user_id)
+    favorite_locations = get_favorite_locations(user_id)
+    print(f"Rendering favorites for user {user_id}: {favorite_locations}")
+    return render_template('favorites.html', uid=user_id, user_info=user_info, locations=favorite_locations)
 
 def get_user_info(uid):
     ref = db.reference(f'users/{uid}')
@@ -223,20 +224,15 @@ def create_user():
     full_name = data.get('full_name')
 
     try:
-       
         user = auth.create_user(
             email=email,
             password=password
         )
 
-        
         user_data = {
             'fullName': full_name,
             'email': email,
-            'favorites': {
-                '0': 'placeholder'  
             }
-        }
         print(full_name, email)
         db.reference(f'users/{user.uid}').set(user_data)
 
@@ -254,21 +250,22 @@ def login_user():
         user = auth.get_user_by_email(email)
         user_info = get_user_info(user.uid)
         session['user_info'] = user_info
+        session['user_id'] = user.uid  # Ensure user_id is set in the session
+        print(f"User logged in: {session['user_info']}")
         return jsonify({'message': 'User logged in successfully', 'uid': user.uid}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 400
 
-    
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect(url_for('index'))
 
-
 @app.route('/set_favorite', methods=['POST'])
 def set_favorite():
+    
     data = request.json
-    uid = session.get('user_info', {}).get('uid')
+    uid = session.get('user_id')  # Ensure we check session['user_id']
     location_id = data.get('favorite')
     
     if not uid:
@@ -278,23 +275,37 @@ def set_favorite():
         return jsonify({'status': 'error', 'message': 'Location ID not provided'}), 400
     
     try:
-        user_ref = db.reference(f'users/{uid}/favorites')
-        favorites = user_ref.get() or []
-        
-        if location_id not in favorites:
-            favorites.append(location_id)
-            user_ref.set(favorites)
+        user_ref = db.reference(f'users/{uid}')
+        user_data = user_ref.get()
+
+        # Check if user_data exists
+        if not user_data:
+            return jsonify({'status': 'error', 'message': 'User not found'}), 404
+
+        favorites_ref = user_ref.child('favorites')
+        favorites = favorites_ref.get()
+
+        # If favorites list doesn't exist, create it and add the location_id
+        if not favorites:
+            favorites = [location_id]
+            favorites_ref.set(favorites)
             return jsonify({'status': 'added'})
         else:
-            return jsonify({'status': 'already_favorite'})
+            if location_id not in favorites:
+                favorites.append(location_id)
+                favorites_ref.set(favorites)
+                return jsonify({'status': 'added'})
+            else:
+                return jsonify({'status': 'already_favorite'})
     except Exception as e:
         print(f"Error adding favorite: {str(e)}")
         return jsonify({'status': 'error', 'message': 'Database error'}), 500
 
+
 @app.route('/delete_favorite', methods=['POST'])
 def delete_favorite():
     data = request.json
-    uid = session.get('user_info', {}).get('uid')
+    uid = session.get('user_id')  # Ensure we check session['user_id']
     location_id = data.get('favorite')
     
     if not uid:
@@ -316,7 +327,6 @@ def delete_favorite():
     except Exception as e:
         print(f"Error removing favorite: {str(e)}")
         return jsonify({'status': 'error', 'message': 'Database error'}), 500
-
 
 if __name__ == '__main__':
     app.run(debug=True)
